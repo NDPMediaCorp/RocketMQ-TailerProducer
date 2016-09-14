@@ -34,7 +34,7 @@ public class FileMonitorTest {
   public void testFileMove() throws IOException, InterruptedException {
     NativeUtils.loadLibraryFromJar("/" + System.mapLibraryName("filemonitor"));
     FileMonitor fileMonitor = new FileMonitor();
-    fileMonitor.startMonitor("/Users/holly/Downloads/test1", new
+    fileMonitor.startMonitor(new String[]{"/Users/holly/Downloads/test1"}, new
         FileEventListener() {
 
           @Override
@@ -60,7 +60,7 @@ public class FileMonitorTest {
 
     Thread.sleep(30000);
 
-    fileMonitor.stop("/Users/holly/Downloads/test1");
+    fileMonitor.stop();
 
   }
 }

@@ -17,9 +17,9 @@ public class FileMonitor {
     }
   }
 
-  public native void startMonitor(String path, FileEventListener listener);
+  public native void startMonitor(String[] path, FileEventListener listener);
 
-  public native void stop(String path);
+  public native void stop();
 
 
 }
