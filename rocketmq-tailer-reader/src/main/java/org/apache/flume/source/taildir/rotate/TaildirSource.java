@@ -27,7 +27,6 @@ import com.google.common.collect.Table;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.gson.Gson;
 
-import com.ndpmedia.rocketmq.tailer.config.TailerConfig;
 import com.ndpmedia.rocketmq.tailer.fs.FileEventListener;
 import com.ndpmedia.rocketmq.tailer.fs.FileMonitor;
 

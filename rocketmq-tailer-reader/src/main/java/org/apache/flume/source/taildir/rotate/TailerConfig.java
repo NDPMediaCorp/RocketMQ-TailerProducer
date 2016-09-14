@@ -1,4 +1,4 @@
-package com.ndpmedia.rocketmq.tailer.config;
+package org.apache.flume.source.taildir.rotate;
 
 /**
  * Created by holly on 9/8/16.
