@@ -1,0 +1,1 @@
+/opt/soft/apache-flume-1.6.0-bin/bin/flume-ng agent -c /opt/soft/apache-flume-1.6.0-bin/conf/ -f flume-conf.properties -n test -Denable_ssl=true -Drocketmq.namesrv.domain=172.30.30.125 -Dlog.home=./logs -Dflume.root.logger=DEBUG,console

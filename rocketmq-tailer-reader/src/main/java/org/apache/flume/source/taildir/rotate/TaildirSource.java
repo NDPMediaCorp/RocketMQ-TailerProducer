@@ -148,7 +148,7 @@ public class TaildirSource extends AbstractSource implements
         logger.info("rename file detected {} -> {}, begin to update files", oldFile, newFile);
         try {
           //start scan now
-          reader.updateTailFiles();
+
           long inode = reader.getInode(new File(newFile));
           TailFile tailFile = reader.getTailFiles().get(inode);
           if (tailFile == null) {
@@ -158,6 +158,7 @@ public class TaildirSource extends AbstractSource implements
           tailFile.updatePath(inode, tailFile.getPath(), newFile);
           //save now
           writePosition();
+          reader.updateTailFiles();
         } catch (Exception e) {
           logger.error("file monitor listen onRename fail", e);
         }
