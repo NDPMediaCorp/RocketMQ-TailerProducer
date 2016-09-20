@@ -196,7 +196,9 @@ public class TaildirSource extends AbstractSource implements
       }
       fileMonitor.stop();
       // write the last position
-      writePosition();
+      while (!writePosition()){
+
+      };
       reader.close();
     } catch (InterruptedException e) {
       logger.info("Interrupted while awaiting termination", e);
@@ -405,25 +407,24 @@ public class TaildirSource extends AbstractSource implements
     }
   }
 
-  private void writePosition() {
+  private boolean writePosition() {
     boolean locked = positionLock.writeLock().tryLock();
     if (!locked) {
-      return;
+      return false;
     }
 
     File file = new File(positionFilePath);
     FileWriter writer = null;
     try {
       writer = new FileWriter(file);
-      if (!existingInodes.isEmpty()) {
-        String json = toPosInfoJson();
-        writer.write(json);
-      }
+      String json = toPosInfoJson();
+      writer.write(json);
     } catch (Throwable t) {
       logger.error("Failed writing positionFile", t);
     } finally {
       try {
         if (writer != null) {
+          writer.flush();
           writer.close();
         }
       } catch (IOException e) {
@@ -431,6 +432,7 @@ public class TaildirSource extends AbstractSource implements
       }
       positionLock.writeLock().unlock();
     }
+    return true;
   }
 
   private String toPosInfoJson() {

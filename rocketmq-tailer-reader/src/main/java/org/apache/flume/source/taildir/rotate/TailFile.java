@@ -20,6 +20,7 @@
 package org.apache.flume.source.taildir.rotate;
 
 import com.google.common.collect.Lists;
+
 import org.apache.flume.Event;
 import org.apache.flume.event.EventBuilder;
 import org.slf4j.Logger;
@@ -32,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 
 public class TailFile {
+
   private static final Logger logger = LoggerFactory.getLogger(TailFile.class);
 
   private static final byte BYTE_NL = (byte) 10;
@@ -118,21 +120,21 @@ public class TailFile {
   }
 
   public boolean updatePos(String path, long inode, long pos) throws IOException {
-    if (this.inode == inode ) {
+    if (this.inode == inode) {
       setPos(pos);
       updateFilePos(pos);
       logger.info("Updated position, file: " + path + ", inode: " + inode + ", pos: " + pos);
-      if(!this.path.equals(path)){
-        this.path = path;
-        logger.info("Updated new path to " + path + ", inode: " + inode + ", pos: " + pos);
+      if (!path.equals(this.path)) {
+        logger.info("Updated position, file  name changed: " + this.path + ", inode: " + inode +
+                    ", " + "pos: " + pos);
       }
       return true;
     }
     return false;
   }
 
-  public boolean updatePath(long inode , String oldPath, String newPath){
-    if((inode == this.inode) && this.path.equals(oldPath)){
+  public boolean updatePath(long inode, String oldPath, String newPath) {
+    if ((inode == this.inode) && this.path.equals(oldPath)) {
       this.path = newPath;
       return true;
     }
@@ -149,7 +151,7 @@ public class TailFile {
 
 
   public List<Event> readEvents(int numEvents, boolean backoffWithoutNL,
-      boolean addByteOffset) throws IOException {
+                                boolean addByteOffset) throws IOException {
     List<Event> events = Lists.newLinkedList();
     for (int i = 0; i < numEvents; i++) {
       Event event = readEvent(backoffWithoutNL, addByteOffset);
@@ -169,13 +171,14 @@ public class TailFile {
     }
     if (backoffWithoutNL && !line.lineSepInclude) {
       logger.info("Backing off in file without newline: "
-          + path + ", inode: " + inode + ", pos: " + raf.getFilePointer());
+                  + path + ", inode: " + inode + ", pos: " + raf.getFilePointer());
       updateFilePos(posTmp);
       return null;
     }
     Event event = EventBuilder.withBody(line.line);
     if (addByteOffset == true) {
-      event.getHeaders().put(TaildirSourceConfigurationConstants.BYTE_OFFSET_HEADER_KEY, posTmp.toString());
+      event.getHeaders()
+          .put(TaildirSourceConfigurationConstants.BYTE_OFFSET_HEADER_KEY, posTmp.toString());
     }
     return event;
   }
@@ -225,7 +228,8 @@ public class TailFile {
             oldLen -= 1;
           }
           lineResult = new LineResult(true,
-              concatByteArrays(oldBuffer, 0, oldLen, buffer, bufferPos, lineLen));
+                                      concatByteArrays(oldBuffer, 0, oldLen, buffer, bufferPos,
+                                                       lineLen));
           setLineReadPos(lineReadPos + (oldBuffer.length + (i - bufferPos + 1)));
           oldBuffer = new byte[0];
           if (i + 1 < buffer.length) {
@@ -259,6 +263,7 @@ public class TailFile {
   }
 
   private class LineResult {
+
     final boolean lineSepInclude;
     final byte[] line;
 
