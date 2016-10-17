@@ -47,6 +47,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -384,8 +385,14 @@ public class TaildirSource extends AbstractSource implements
     public void run() {
       try {
         long now = System.currentTimeMillis();
-        for (TailFile tf : reader.getTailFiles().values()) {
+        List<TailFile> list = new ArrayList<>();
+        list.addAll(reader.getTailFiles().values());
+        for (TailFile tf : list) {
           if (tf.getLastUpdated() + idleTimeout < now && tf.getRaf() != null) {
+            long inode = tf.getInode();
+            if (idleInodes.contains(inode)){
+              continue;
+            }
             idleInodes.add(tf.getInode());
           }
         }
