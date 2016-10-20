@@ -372,6 +372,7 @@ public class TaildirSource extends AbstractSource implements
         tf.close();
         logger.info("Closed file: " + tf.getPath() + ", inode: " + inode + ", pos: " + tf.getPos());
       }
+      reader.getTailFiles().remove(inode);
     }
     idleInodes.clear();
   }
