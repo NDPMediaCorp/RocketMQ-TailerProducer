@@ -142,6 +142,12 @@ public class TaildirSource extends AbstractSource implements
       @Override
       public void onDelete(String file) {
         //leave source to auto process file
+        try {
+          long inode = reader.getInode(new File(file));
+          reader.getTailFiles().remove(inode);
+        } catch (IOException e) {
+          logger.error("file monitor listen onDelete fail", e);
+        }
       }
 
       @Override
@@ -372,7 +378,6 @@ public class TaildirSource extends AbstractSource implements
         tf.close();
         logger.info("Closed file: " + tf.getPath() + ", inode: " + inode + ", pos: " + tf.getPos());
       }
-      reader.getTailFiles().remove(inode);
     }
     idleInodes.clear();
   }
