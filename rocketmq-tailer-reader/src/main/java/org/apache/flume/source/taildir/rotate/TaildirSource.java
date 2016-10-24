@@ -421,8 +421,10 @@ public class TaildirSource extends AbstractSource implements
   }
 
   private boolean writePosition() {
+    logger.info("start to write position file");
     boolean locked = positionLock.writeLock().tryLock();
     if (!locked) {
+      logger.info("position file lock fail");
       return false;
     }
 
@@ -451,9 +453,10 @@ public class TaildirSource extends AbstractSource implements
   private String toPosInfoJson() {
     @SuppressWarnings("rawtypes")
     List<Map> posInfos = Lists.newArrayList();
-    for (Long inode : existingInodes) {
-      TailFile tf = reader.getTailFiles().get(inode);
-      posInfos.add(ImmutableMap.of("inode", inode, "pos", tf.getPos(), "file", tf.getPath()));
+
+    for (Map.Entry<Long, TailFile> entry : reader.getTailFiles().entrySet()) {
+      TailFile tf = entry.getValue();
+      posInfos.add(ImmutableMap.of("inode", entry.getKey(), "pos", tf.getPos(), "file", tf.getPath()));
     }
     return new Gson().toJson(posInfos);
   }

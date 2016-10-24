@@ -134,8 +134,9 @@ public class TailFile {
   }
 
   public boolean updatePath(long inode, String oldPath, String newPath) {
-    if ((inode == this.inode) && this.path.equals(oldPath)) {
+    if ((inode == this.inode)) {
       this.path = newPath;
+      logger.info("udpate inode {} to new filename {}",inode,newPath);
       return true;
     }
     return false;
