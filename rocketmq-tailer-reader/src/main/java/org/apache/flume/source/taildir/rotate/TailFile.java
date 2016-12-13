@@ -254,6 +254,10 @@ public class TailFile {
 
   public void close() {
     try {
+      //may closed at somewhere else
+      if (raf == null){
+        return;
+      }
       raf.close();
       raf = null;
       long now = System.currentTimeMillis();

@@ -49,6 +49,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -143,9 +144,18 @@ public class TaildirSource extends AbstractSource implements
       public void onDelete(String file) {
         //leave source to auto process file
         try {
-          long inode = reader.getInode(new File(file));
-          reader.getTailFiles().remove(inode);
-        } catch (IOException e) {
+          for (Iterator<Entry<Long, TailFile>> iterator = reader.getTailFiles().entrySet()
+              .iterator();iterator.hasNext();){
+            Entry<Long, TailFile> entry = iterator.next();
+            if(entry.getValue().getPath().equals(file)){
+              logger.info("remove file listen onDelete: "+file);
+
+              entry.getValue().close();
+              iterator.remove();
+              break;
+            }
+          }
+        } catch (Exception e) {
           logger.error("file monitor listen onDelete fail", e);
         }
       }
@@ -373,6 +383,10 @@ public class TaildirSource extends AbstractSource implements
   private void closeTailFiles() throws IOException, InterruptedException {
     for (long inode : idleInodes) {
       TailFile tf = reader.getTailFiles().get(inode);
+      //already removed
+      if (tf == null){
+        return;
+      }
       if (tf.getRaf() != null) { // when file has not closed yet
         tailFileProcess(tf, false);
         tf.close();
