@@ -178,7 +178,6 @@ public class TaildirSource extends AbstractSource implements
         }
       }
     });
-    ;
     super.start();
     logger.debug("TaildirSource started");
     sourceCounter.start();
