@@ -27,21 +27,18 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Table;
 import com.google.common.io.Files;
-import org.apache.flume.Event;
-import org.apache.flume.source.taildir.rotate.ReliableTaildirEventReader;
-import org.apache.flume.source.taildir.rotate.TailFile;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
+import org.apache.flume.Event;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
-import static org.apache.flume.source.taildir.rotate.TaildirSourceConfigurationConstants
-                  .BYTE_OFFSET_HEADER_KEY;
+import static org.apache.flume.source.taildir.rotate.TaildirSourceConfigurationConstants.BYTE_OFFSET_HEADER_KEY;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -494,5 +491,13 @@ public class TestTaildirEventReader {
     //Should treat \r\n as line boundary
     assertTrue(out.contains("file1line3"));
     assertTrue(out.contains("file1line4"));
+  }
+
+
+  @Test
+  public void testMiss(){
+    long now = TimeUnit.SECONDS.toMillis(
+        TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis()));
+    System.out.println(now);
   }
 }

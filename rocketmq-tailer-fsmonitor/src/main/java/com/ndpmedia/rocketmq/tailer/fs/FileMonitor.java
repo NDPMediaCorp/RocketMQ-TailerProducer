@@ -7,7 +7,7 @@ import java.io.IOException;
 /**
  * Created by holly on 9/7/16.
  */
-public class FileMonitor {
+class FileMonitor {
   static {
     //System.loadLibrary("filemonitor"); // Load native library at runtime
     try {

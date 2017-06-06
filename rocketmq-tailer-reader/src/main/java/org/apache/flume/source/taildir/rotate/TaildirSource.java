@@ -26,21 +26,8 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Table;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.gson.Gson;
-
 import com.ndpmedia.rocketmq.tailer.fs.FileEventListener;
-import com.ndpmedia.rocketmq.tailer.fs.FileMonitor;
-
-import org.apache.flume.ChannelException;
-import org.apache.flume.Context;
-import org.apache.flume.Event;
-import org.apache.flume.FlumeException;
-import org.apache.flume.PollableSource;
-import org.apache.flume.conf.Configurable;
-import org.apache.flume.instrumentation.SourceCounter;
-import org.apache.flume.source.AbstractSource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import com.ndpmedia.rocketmq.tailer.fs.FileEventNotify;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -60,6 +47,16 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import org.apache.flume.ChannelException;
+import org.apache.flume.Context;
+import org.apache.flume.Event;
+import org.apache.flume.FlumeException;
+import org.apache.flume.PollableSource;
+import org.apache.flume.conf.Configurable;
+import org.apache.flume.instrumentation.SourceCounter;
+import org.apache.flume.source.AbstractSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TaildirSource extends AbstractSource implements
                                                   PollableSource, Configurable {
@@ -91,7 +88,7 @@ public class TaildirSource extends AbstractSource implements
   private Long maxBackOffSleepInterval;
   private boolean fileHeader;
   private String fileHeaderKey;
-  private FileMonitor fileMonitor;
+  private FileEventNotify fileEventNotify;
   private ReentrantReadWriteLock positionLock = new ReentrantReadWriteLock();
 
 
@@ -122,8 +119,8 @@ public class TaildirSource extends AbstractSource implements
     positionWriter.scheduleWithFixedDelay(new PositionWriterRunnable(),
                                           writePosInitDelay, writePosInterval,
                                           TimeUnit.MILLISECONDS);
-    fileMonitor = new FileMonitor();
-    fileMonitor.startMonitor(getMonitorPaths(), new FileEventListener() {
+    fileEventNotify = new FileEventNotify();
+    fileEventNotify.registerListener(getMonitorPaths(), new FileEventListener() {
       @Override
       public void onCreate(String file) {
         logger.info("new file detected {}, begin to update files", file);
@@ -211,7 +208,7 @@ public class TaildirSource extends AbstractSource implements
           service.shutdownNow();
         }
       }
-      fileMonitor.stop();
+      fileEventNotify.stop();
       // write the last position
       while (!writePosition()){
 
