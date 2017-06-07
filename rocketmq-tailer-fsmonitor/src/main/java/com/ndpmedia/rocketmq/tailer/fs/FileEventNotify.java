@@ -10,11 +10,13 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * Created by holly on 06/06/2017.
  */
 public class FileEventNotify {
+    public static final Object lock = new Object();
     private static FileMonitor fileMonitor;
     private static FileEventListenerImpl fileEventListener;
+    private static List<String> list = new CopyOnWriteArrayList<>();
 
     public FileEventNotify() {
-        synchronized (fileMonitor) {
+        synchronized (lock) {
             if (fileMonitor == null) {
                 fileMonitor = new FileMonitor();
                 fileEventListener = new FileEventListenerImpl();
@@ -29,8 +31,7 @@ public class FileEventNotify {
         }
     }
 
-
-    public void stop(){
+    public void stop() {
         fileMonitor.stop();
     }
 
@@ -69,16 +70,15 @@ public class FileEventNotify {
             }, oldFile);
         }
 
-
-        private void onNotify(Notify notify,String file){
+        private void onNotify(Notify notify, String file) {
             for (Iterator<Map.Entry<String, List<FileEventListener>>> iterator = map.entrySet().iterator(); iterator.hasNext(); ) {
                 Map.Entry<String, List<FileEventListener>> entry = iterator.next();
-                if(file.startsWith(entry.getKey())){
-                    try{
-                        for(FileEventListener listener:entry.getValue()){
+                if (file.startsWith(entry.getKey())) {
+                    try {
+                        for (FileEventListener listener : entry.getValue()) {
                             notify.onNotify(listener);
                         }
-                    }catch(Exception e){
+                    } catch (Exception e) {
                         //ignore
                     }
                 }
@@ -91,17 +91,19 @@ public class FileEventNotify {
                     map.put(path, new CopyOnWriteArrayList<FileEventListener>());
                 }
                 map.get(path).add(listener);
+                System.out.println("register listener "+ listener + " path "+ path);
+
+                list.add(path);
             }
 
-            if (map.size() > 0) {
-                fileMonitor.startMonitor(paths, this);
-            }
+            System.out.println("start monitor of path size "+list.size());
+
+            fileMonitor.startMonitor(list.toArray(new String[] {}), this);
         }
     }
 
-    interface Notify{
+    interface Notify {
         void onNotify(FileEventListener listener);
     }
-
 
 }
