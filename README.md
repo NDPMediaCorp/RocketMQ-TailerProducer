@@ -1,3 +1,15 @@
+# fix and improvement
+original flume-taildir-source does not support file rename, once file is renamed, the file will be re-open and start from the beginning
+
+file posision can not persist immediately after source commit the event.  which will case duplicate read after agent crush or stop. 
+
+file rename and persist new file to position file support.
+
+in original flume-taildir-source, remove file from path will not remove TailFile from memory, which will be a problem in long running agent.
+
+
+
+
 # RocketMQ-TailerProducer
 ## configuration sample file
 ```
