@@ -1,9 +1,9 @@
 # fix and improvement
-original flume-taildir-source does not support file rename, once file is renamed, the file will be re-open and start from the beginning
+original flume-taildir-source does not support file rename, once file is renamed, the file will be reopened and be processed from the beginning
 
-file posision can not persist immediately after source commit the event.  which will case duplicate read after agent crush or stop. 
+file position can not be persisted immediately after source commit the event,  which will cause duplicate read after agent crash or stop.
 
-file rename and persist new file to position file support.
+file renaming and new file persisting to position file is supported.
 
 in original flume-taildir-source, remove file from path will not remove TailFile from memory, which will be a problem in long running agent.
 
